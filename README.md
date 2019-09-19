@@ -48,7 +48,7 @@ Running all services together consumes a lot of memory. So you can start a subse
 
 For example you could start the following micro services and an fims-web-app:
 ```
-docker-compose up provisioner-ms identity-ms office-ms customer-ms accounting-ms fims-web-app
+docker-compose up provisioner-ms identity-ms office-ms customer-ms accounting-ms portfolio-ms fims-web-app 
 ```
 
 If you want you can add other micro services (listed in docker-compose.yml) to the list.
@@ -154,6 +154,28 @@ docker volume rm external_tools_postgres-volume
 docker-compose up
 ```
 
+### How to run some services from localhost
+
+Let's say you want to run deposit-account-management-ms and rhythm-ms from host machine (not from Docker).
+Then don't start these services with docker-comopse up, instead define and start service localhost-ms
+And under aliases: list the services you want to run from localhost.
+This container (qoomon/docker-host) redirect all requests arriving to it to host machine (to the same port).
+
+```
+  localhost-ms:
+    image: qoomon/docker-host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    restart: on-failure
+    networks:
+      external_tools_default:
+      fineract:
+        aliases:
+          # list here services you want to run from localhost
+          - deposit-account-management-ms
+          - rhythm-ms
+```
 
 ## TODO
 
